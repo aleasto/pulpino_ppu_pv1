@@ -189,6 +189,11 @@ static int qprint(char **out, const char *format, va_list va)
         ++format;
         pad |= PAD_ZERO;
       }
+      if (*format == '.')
+      {
+        // width for float
+        ++format;
+      }
       for ( ; *format >= '0' && *format <= '9'; ++format) {
         width *= 10;
         width += *format - '0';
@@ -212,6 +217,45 @@ static int qprint(char **out, const char *format, va_list va)
       }
       if( *format == 'X' ) {
         pc += qprinti (out, va_arg(va, uint32_t), 16, 0, width, pad, 'A');
+        continue;
+      }
+      if( *format == 'a' ) {
+        uint64_t repr = va_arg(va, uint64_t);
+        pc += qprints (out, "0x", 0, 0);
+        pc += qprinti (out, repr >> 32, 16, 0, 8, PAD_ZERO, 'a');
+        pc += qprinti (out, repr,       16, 0, 8, PAD_ZERO, 'a');
+        continue;
+      }
+      if( *format == 'f' ) {
+        double f = va_arg(va, double);
+        if (width == 0)
+          width = 6;
+        int whole_part = (int)f;
+        float frac_part = f > 0 ? f - whole_part : whole_part - f;
+        int all_nines = 1;
+        int rounds_up = frac_part == 1.0;
+        for (int j = 0; j < width; j++) {
+          if (!rounds_up)
+            all_nines &= (frac_part - (int)frac_part) > 0.9;
+          frac_part *= 10;
+        }
+        if (frac_part - (int)frac_part >= 0.5 || rounds_up) {
+          if (all_nines) {
+            frac_part = 0;
+            if (f > 0)
+              whole_part += 1;
+            else
+              whole_part -= 1;
+          } else {
+            frac_part += 1;
+          }
+        }
+
+        if (whole_part == 0 && f < 0)
+          pc += qprints (out, "-", 0, 0);
+        pc += qprinti (out, whole_part, 10, 1, 0, pad, 'a');
+        pc += qprints (out, ".", 0, 0);
+        pc += qprinti (out, (int)frac_part,  10, 0, width, PAD_ZERO, 'a');
         continue;
       }
       if( *format == 'c' ) {
