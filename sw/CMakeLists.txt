@@ -81,10 +81,10 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wextra -Wall -Wno-unused-parameter -Wno-unu
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/ref -T${LDSCRIPT} -nostartfiles -Wl,--gc-sections")
 set(BOOT_LINKER_FLAGS      "-L${CMAKE_CURRENT_SOURCE_DIR}/ref -T${LDSCRIPT_BOOT} -nostartfiles -Wl,--gc-sections")
 
-set(CMAKE_CXX_COMPILER "${CMAKE_C_COMPILER}")
+# set(CMAKE_CXX_COMPILER "${CMAKE_C_COMPILER}")
 set(CMAKE_CXX_FLAGS    "${CMAKE_C_FLAGS}")
 
-set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
+# set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
 set(CMAKE_ASM_FLAGS    "${CMAKE_C_FLAGS}")
 
 set(PULP_MODELSIM_DIRECTORY "" CACHE PATH "Path to the ModelSim PULPino build")
@@ -107,7 +107,7 @@ set(VSIM "vsim" CACHE FILEPATH "Path to the vsim executable")
    include_directories(libs/math_fns_lib/inc)
  endif()
 
- set_source_files_properties(${crt0} PROPERTIES LANGUAGE C)
+ # set_source_files_properties(${crt0} PROPERTIES LANGUAGE C)
  add_library(crt0 OBJECT ${crt0})
 
  add_library(crt0_boot OBJECT ${crt0_boot})

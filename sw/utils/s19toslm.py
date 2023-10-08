@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Copyright 2017 ETH Zurich and University of Bologna.
 # Copyright and related rights are licensed under the Solderpad Hardware
