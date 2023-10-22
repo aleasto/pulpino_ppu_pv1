@@ -43,7 +43,7 @@ void avgpool4x4(posit_t *a, posit_t *c, int n) {
           sum = padd(sum, a[(i + k) * n + j + l]);
         }
       }
-      c[i * n + j] = pdiv(sum, fcvt_p(0x41800000));
+      c[i * n + j] = pdiv(sum, fcvt_p(16.0));
     }
   }
 }

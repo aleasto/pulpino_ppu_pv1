@@ -123,8 +123,15 @@ posit_t pdiv(long a, long b) {
   return result;
 }
 
-posit_t fcvt_p(int f) {
-  register int p1 asm("a1") = f; 
+union fltrepr {
+    float flt;
+    int i;
+};
+
+posit_t fcvt_p(float f) {
+  union fltrepr repr;
+  repr.flt = f;
+  register int p1 asm("a1") = repr.i;
   register int result asm("a0");
   __asm__(
       ""
@@ -139,7 +146,8 @@ posit_t fcvt_p(int f) {
   return result;
 }
 
-posit_t pcvt_f(int p) {
+float pcvt_f(posit_t p) {
+  union fltrepr repr;
   register int p1 asm("a1") = p; 
   register int result asm("a0");
   __asm__(
@@ -158,5 +166,6 @@ posit_t pcvt_f(int p) {
       "&1) <<7),  ((r%1>>1)&0xF),  opf2 << 1\n"
       : [result] "=r"(result)
       : "r"(p1), "[result]"(result));
-  return result;
+  repr.i = result;
+  return repr.flt;
 }
