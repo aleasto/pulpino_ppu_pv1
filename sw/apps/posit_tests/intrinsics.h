@@ -64,6 +64,15 @@ posit_t pdiv(long a, long b) {
   return result;
 }
 
+posit_t pneg(long a) {
+  int result;
+  __asm__(
+      ".insn r 0xb, 1, 0x6A, %[result], x0, %1"
+      : [result] "=r"(result)
+      : "r"(a));
+  return result;
+}
+
 union fltrepr {
     float flt;
     int i;

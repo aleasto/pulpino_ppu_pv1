@@ -8,4 +8,5 @@ int main() {
     printf("%f - %f = %f\n", x, y, pcvt_f( psub(fcvt_p(x), fcvt_p(y)) ));
     printf("%f * %f = %f\n", x, y, pcvt_f( pmul(fcvt_p(x), fcvt_p(y)) ));
     printf("%f / %f = %f\n", x, y, pcvt_f( pdiv(fcvt_p(x), fcvt_p(y)) ));
+    printf("-%f = %f\n", y, pcvt_f( pneg(fcvt_p(y)) ));
 }
