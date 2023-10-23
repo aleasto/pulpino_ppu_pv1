@@ -29,97 +29,38 @@ typedef union {
 // Format is identical to integer addition
 // We change opcode accordingly
 posit_t padd(long a, long b) {
-  register int p1 asm("a1") = a;  // asm ("a0")
-  register int p2 asm("a2") = b;  // asm ("a1")
-  register int result asm("a0");
+  int result;
   __asm__(
-      ""
-      ".set rs0,8\n"
-      ".set rs1,9\n"
-      ".set rs2,18\n"
-      ".set ra0,10\n"
-      ".set ra1,11\n"
-      ".set ra2,12\n"
-      ".set op,0xb\n"
-      ".set opf1,0\n"
-      ".set opf2,0x6A\n"
-      // "padd %[result],%1,%2\n"
-      ".byte op|((r%[result]&1) <<7),  ((r%[result]>>1)&0xF)|(opf1<<4)|((r%1 "
-      "&1) <<7),  ((r%2&0xF) << 4) | ((r%1>>1)&0xF),  ((r%2>>4)&0x1)|(opf2 << 1)\n"
+      ".insn r 0xb, 0, 0x6A, %[result], %1, %2"
       : [result] "=r"(result)
-      : "r"(p1), "r"(p2), "[result]"(result));
+      : "r"(a), "r"(b));
   return result;
 }
 
-// Posit addition via asm
-// Format is identical to integer addition
-// We change opcode accordingly
 posit_t psub(long a, long b) {
-  register int p1 asm("a1") = a;  // asm ("a0")
-  register int p2 asm("a2") = b;  // asm ("a1")
-  register int result asm("a0");
+  int result;
   __asm__(
-      ""
-      ".set rs0,8\n"
-      ".set rs1,9\n"
-      ".set rs2,18\n"
-      ".set ra0,10\n"
-      ".set ra1,11\n"
-      ".set ra2,12\n"
-      ".set op,0xb\n"
-      ".set opf1,1\n"
-      ".set opf2,0x6A\n"
-      // "padd %[result],%1,%2\n"
-      ".byte op|((r%[result]&1) <<7),  ((r%[result]>>1)&0xF)|(opf1<<4)|((r%1 "
-      "&1) <<7),  ((r%2&0xF) << 4) | ((r%1>>1)&0xF),  ((r%2>>4)&0x1)|(opf2 << 1)\n"
+      ".insn r 0xb, 1, 0x6A, %[result], %1, %2"
       : [result] "=r"(result)
-      : "r"(p1), "r"(p2), "[result]"(result));
+      : "r"(a), "r"(b));
   return result;
 }
 
-// Posit addition via asm
-// Format is identical to integer addition
-// We change opcode accordingly
 posit_t pmul(long a, long b) {
-  register int p1 asm("a1") = a;  // asm ("a0")
-  register int p2 asm("a2") = b;  // asm ("a1")
-  register int result asm("a0");
+  int result;
   __asm__(
-      ""
-      ".set rs0,8\n"
-      ".set rs1,9\n"
-      ".set rs2,18\n"
-      ".set ra0,10\n"
-      ".set ra1,11\n"
-      ".set ra2,12\n"
-      ".set op,0xb\n"
-      ".set opf1,2\n"
-      ".set opf2,0x6A\n"
-      // "padd %[result],%1,%2\n"
-      ".byte op|((r%[result]&1) <<7),  ((r%[result]>>1)&0xF)|(opf1<<4)|((r%1 "
-      "&1) <<7),  ((r%2&0xF) << 4) | ((r%1>>1)&0xF),  ((r%2>>4)&0x1)|(opf2 << 1)\n"
+      ".insn r 0xb, 2, 0x6A, %[result], %1, %2"
       : [result] "=r"(result)
-      : "r"(p1), "r"(p2), "[result]"(result));
+      : "r"(a), "r"(b));
   return result;
 }
 
-// Posit addition via asm
-// Format is identical to integer addition
-// We change opcode accordingly
 posit_t pdiv(long a, long b) {
-  register int p1 asm("a1") = a;  // asm ("a0")
-  register int p2 asm("a2") = b;  // asm ("a1")
-  register int result asm("a0");
+  int result;
   __asm__(
-      ""
-      ".set op,0xb\n"
-      ".set opf1,4\n"
-      ".set opf2,0x6A\n"
-      // "padd %[result],%1,%2\n"
-      ".byte op|((r%[result]&1) <<7),  ((r%[result]>>1)&0xF)|(opf1<<4)|((r%1 "
-      "&1) <<7),  ((r%2&0xF) << 4) | ((r%1>>1)&0xF),  ((r%2>>4)&0x1)|(opf2 << 1)\n"
+      ".insn r 0xb, 4, 0x6A, %[result], %1, %2"
       : [result] "=r"(result)
-      : "r"(p1), "r"(p2), "[result]"(result));
+      : "r"(a), "r"(b));
   return result;
 }
 
@@ -130,42 +71,20 @@ union fltrepr {
 
 posit_t fcvt_p(float f) {
   union fltrepr repr;
+  int result;
   repr.flt = f;
-  register int p1 asm("a1") = repr.i;
-  register int result asm("a0");
   __asm__(
-      ""
-      ".set op,0xb\n"
-      ".set opf1,0\n"
-      ".set opf2,0x68\n"
-      // "pcvt_f %[result],%1\n"
-      ".byte op|((r%[result]&1) <<7),  ((r%[result]>>1)&0xF)|(opf1<<4)|((r%1 "
-      "&1) <<7),  ((r%1>>1)&0xF),  opf2 << 1\n"
+      ".insn r 0xb, 0, 0x68, %[result], %1, x0"
       : [result] "=r"(result)
-      : "r"(p1), "[result]"(result));
+      : "r"(repr.i));
   return result;
 }
 
 float pcvt_f(posit_t p) {
   union fltrepr repr;
-  register int p1 asm("a1") = p; 
-  register int result asm("a0");
   __asm__(
-      ""
-      ".set rs0,8\n"
-      ".set rs1,9\n"
-      ".set rs2,18\n"
-      ".set ra0,10\n"
-      ".set ra1,11\n"
-      ".set ra2,12\n"
-      ".set op,0xb\n"
-      ".set opf1,0\n"
-      ".set opf2,0x69\n"
-      // "pcvt_f %[result],%1\n"
-      ".byte op|((r%[result]&1) <<7),  ((r%[result]>>1)&0xF)|(opf1<<4)|((r%1 "
-      "&1) <<7),  ((r%1>>1)&0xF),  opf2 << 1\n"
-      : [result] "=r"(result)
-      : "r"(p1), "[result]"(result));
-  repr.i = result;
+      ".insn r 0xb, 0, 0x69, %[result], %1, x0"
+      : [result] "=r"(repr.i)
+      : "r"(p));
   return repr.flt;
 }
