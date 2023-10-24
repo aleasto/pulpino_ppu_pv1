@@ -16,7 +16,7 @@ add_custom_command(
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_application(${LOCAL_NAME} ${CMAKE_CURRENT_BINARY_DIR}/generated.cpp FLAGS "-O3 -Xvra -max-unroll=0 -temp-dir taffo_logs -float-output ${LOCAL_NAME}.float.o")
+add_application(${LOCAL_NAME} ${CMAKE_CURRENT_BINARY_DIR}/generated.cpp FLAGS "-O3 -Xvra -max-unroll=0 -hardposit -Xdta -totalbits=16 -Xdta -maxtotalbits=16 -temp-dir taffo_logs -float-output ${LOCAL_NAME}.float.o")
 
 # Hack to add ${LOCAL_NAME}.float.o as a BYPRODUCT of ${LOCAL_NAME}.elf
 add_custom_command(
