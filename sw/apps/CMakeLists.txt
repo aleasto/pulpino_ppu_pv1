@@ -224,4 +224,5 @@ if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scratch/")
   add_subdirectory(scratch)
 endif()
 
+add_subdirectory(taffo_tests)
 add_subdirectory(fft)
