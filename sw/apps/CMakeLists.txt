@@ -112,6 +112,42 @@ macro(add_application NAME SOURCE_FILES)
 endmacro()
 
 ################################################################################
+# TAFFO
+################################################################################
+macro(add_taffo_application NAME SOURCE_FILES)
+  set(LOCAL_SOURCES ${SOURCE_FILES})
+  list(TRANSFORM LOCAL_SOURCES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+  add_custom_command(
+      OUTPUT  generated.c
+      COMMAND cat ${LOCAL_SOURCES} > ${CMAKE_CURRENT_BINARY_DIR}/generated.c
+      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/taffo_logs
+      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/taffo_logs.fixp
+      DEPENDS ${LOCAL_SOURCES}
+  )
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/)
+
+  add_application(${NAME} ${CMAKE_CURRENT_BINARY_DIR}/generated.c
+    FLAGS "-O3 -hardposit -Xdta -totalbits=16 -Xdta -maxtotalbits=16 -temp-dir taffo_logs -float-output ${NAME}.float.o")
+
+  # Hack to add ${NAME}.float.o as a BYPRODUCT of ${NAME}.elf
+  add_custom_command(
+      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.float.o
+      COMMAND true
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.elf)
+  add_application(${NAME}.float ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.float.o SUBDIR ../${NAME}.float)
+
+  add_application(${NAME}.fixp ${CMAKE_CURRENT_BINARY_DIR}/generated.c
+    FLAGS "-O3 -temp-dir taffo_logs.fixp" SUBDIR ../${NAME}.fixp)
+
+  add_custom_target(${NAME}.truth
+    COMMAND sed s/float/double/g ${CMAKE_CURRENT_BINARY_DIR}/generated.c | clang -O3 -I${CMAKE_CURRENT_SOURCE_DIR}/ -DNO_TIMER -o /tmp/${NAME}.truth -x c - && /tmp/${NAME}.truth > ${CMAKE_CURRENT_BINARY_DIR}/truth.stdout
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated.c)
+
+  add_custom_target(${NAME}.all)
+  add_dependencies(${NAME}.all ${NAME}.truth ${NAME}.vsimc ${NAME}.float.vsimc ${NAME}.fixp.vsimc)
+endmacro()
+
+################################################################################
 # boot code macro
 # Used to generate the boot code for pulpino
 # Attention: Every application name has to be unique and must have its own
@@ -226,3 +262,4 @@ endif()
 
 add_subdirectory(taffo_tests)
 add_subdirectory(fft)
+add_subdirectory(fpbench)

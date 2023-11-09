@@ -1,0 +1,1 @@
+add_taffo_application(CX CX.c)
